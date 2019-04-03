@@ -216,6 +216,7 @@
 				getList(this.listQuery).then(response => {
 					this.list = response.data.items;
 					this.listLoading = false;
+          
 				});
 			}
 		},
