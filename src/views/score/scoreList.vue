@@ -1,124 +1,142 @@
 <template>
-  <el-card class="box-card" style="margin: 1vw">
-    <div slot="header" class="clearfix">
-      <span>比赛成绩查询</span>
-    </div>
-    <div class="scoreList">
-      <el-form :model="form" class="queryResult-box" style="margin-bottom: 20px;">
-        <el-form-item label="学生学号：" prop="usernumber">
-          <el-input type="text" v-model="form.usernumber" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <el-form-item label="比赛项目：" prop="gamesname">
-          <el-input type="text" v-model="form.gamesname" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <el-form-item label="比赛时间：" prop="gamestime">
-          <el-input type="text" v-model="form.gamestime" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <div style="display: block">
-          <el-button type="primary" v-on:click="queryResult" plain style="margin-left: 6vw;">查询</el-button>
-          （注：可自由选择查询条件）
-        </div>
-      </el-form>
-      <el-card class="box-card" >
+  <div>
+    <router-view></router-view>
+    <div  v-if="seen">
+      <el-card class="box-card" style="margin: 1vw">
         <div slot="header" class="clearfix">
-          <span>比赛成绩浏览</span>
+          <span>比赛项目查询</span>
         </div>
-        <el-table
-          v-loading="listLoading"
-          :data="list.slice((currpage - 1) * pagesize, currpage * pagesize)"
-          element-loading-text="Loading"
-          border
-          fit
-          highlight-current-row
-          style="margin-bottom: 1vw">
-          <el-table-column align="center" type="index" label="名次">
-            <!--<template slot-scope="scope">-->
-            <!--{{ scope.$index }}-->
-            <!--</template>-->
-          </el-table-column>
-          <el-table-column align="center" label="学号">
-            <template slot-scope="scope">
-              {{ scope.row.string }}
-            </template>
-          </el-table-column>
-          <el-table-column label="姓名" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.title }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="学院" align="center">
-            <template slot-scope="scope">
-              {{ scope.row.title }}
-            </template>
-          </el-table-column>
-          <el-table-column label="年级专业" align="center">
-            <template slot-scope="scope">
-              {{ scope.row.title }}
-            </template>
-          </el-table-column>
-          <el-table-column align="center" prop="created_at" label="比赛项目">
-            <template slot-scope="scope">
-              <span>{{ scope.row.title }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" prop="created_at" label="比赛日期">
-            <template slot-scope="scope">
-              <i class="el-icon-time"/>
-              <span>{{ scope.row.date}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" prop="created_at" label="成绩">
-            <template slot-scope="scope">
-              <span>{{ scope.row.score }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination background
-                       layout="prev, pager, next, sizes, total, jumper"
-                       :page-sizes="[5, 10, 15, 20]"
-                       :page-size="pagesize"
-                       :total="list.length"
-                       @current-change="handleCurrentChange"
-                       @size-change="handleSizeChange">
-          <!--//每页展示条选择组件-->
-          <!--//每页展示条-->
-          <!--// currentPage改变时会触发-->
-          <!--//pagesize改变时触发-->
-
-        </el-pagination>
+        <div class="projectSetList">
+          <Search :items="items" @search="search"></Search>
+          <el-card class="box-card" >
+            <div slot="header" class="clearfix">
+              <span>比赛项目列表</span>
+            </div>
+            <el-table
+              v-loading="listLoading"
+              :data="list.slice((currentpage - 1) * pagesize, currentpage * pagesize)"
+              element-loading-text="Loading"
+              border
+              fit
+              highlight-current-row
+              style="width: 98%;margin-left: 1vw;margin-bottom: 1vw"
+              :default-sort = "{prop: 'date', order: 'ascenting'}">
+              <el-table-column align="center" label="项目名称" prop="name">
+                <template slot-scope="scope">
+                  {{scope.row.gamesname}}
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="性别要求" prop="sex">
+                <template slot-scope="scope">
+                  {{scope.row.sex}}
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="比赛地点" prop="address">
+                <template slot-scope="scope">
+                  {{scope.row.address}}
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="比赛日期" prop="date">
+                <template slot-scope="scope">
+                  {{scope.row.date}}
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="比赛时间" prop="times">
+                <template slot-scope="scope">
+                  {{scope.row.times}}
+                </template>
+              </el-table-column>
+              <el-table-column align="center" label="操作" prop="order">
+                <template slot-scope="scope">
+                  <el-button
+                    size="mini"
+                    type="primary"
+                    plain
+                    @click.native="detailInfo(scope.$index,scope.row)"
+                  >查看详情</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <el-pagination
+              layout="prev, pager, next, sizes, total, jumper"
+              :page-sizes="[5, 10, 15, 20]"
+              :page-size="pagesize"
+              :total="list.length"
+              :current-page="currentpage"
+              @current-change="handleCurrentChange"
+              @size-change="handleSizeChange">
+            </el-pagination>
+          </el-card>
+        </div>
       </el-card>
     </div>
-  </el-card>
+  </div>
 </template>
 
 <script>
   import {getList} from '@/api/table'
+  import Search from "@/components/search-items.vue";
 
   export default {
+    name:'scoreList',
+    components:{Search},
     data() {
       return {
-        list: [],
-        listLoading: true,
         pagesize: 5,
         currpage: 1,
-        form: {
-          usernumber: '',
-          gamesname: '',
-          gamestime: ''
-        },
+        row: {},
+        list: [],
+        listLoading: true,
+        seen:true,
+        form:{},
+        items:[
+          {
+            c_name:'项目名称',
+            e_name:'gamesname',
+            type:'input'
+          },
+          {
+            c_name:'比赛日期',
+            e_name:'date',
+            type:'date'
+          }
+        ],
+        currentpage: 1,
+        pagesize: 5,
+        totalItems: 0,
+        filterTableDataEnd: [],
+        flag: false,
+      }
+    },
+    watch:{
+      $route(to,from){
+        if(to.path === '/score/scoreList'){
+          this.seen = true;
+        }
       }
     },
     created() {
       this.fetchData()
     },
     methods: {
+      search(data){
+        this.form = Object.assign({},data);
+      },
       handleCurrentChange(cpage) {
-        this.currpage = cpage;
+        this.currentpage = cpage;
       },
       handleSizeChange(psize) {
         this.pagesize = psize;
       },
-
+      //重置
+      rest(formName) {
+        this.$refs[formName].resetFields();
+      },
+      // 跳转
+      detailInfo:function(index,row){
+        this.$router.push({ path: '/score/scoreList/detail', query: { row }})
+        this.seen=false;
+      },
       getlist() {
         let starttime = new Date();
         axios('/mockDrink').then(data => {
@@ -129,7 +147,6 @@
           this.$alert('请求超时，刷新重试！')
         })
       },
-
       fetchData: function () {
         this.listLoading = true
         getList(this.listQuery).then(response => {

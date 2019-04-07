@@ -4,20 +4,20 @@
       <span>比赛项目查询</span>
     </div>
     <div class="stutakeSetList">
-      <el-form :model="form" ref="form" class="queryResult-box" style="margin-bottom: 20px;">
-        <el-form-item label="项目名称：" prop="name">
-          <el-input type="text" v-model="form.name" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <el-form-item label="比赛地点：" prop="address">
-          <el-input type="text" v-model="form.address" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <el-form-item label="比赛日期：" prop="date">
-          <el-date-picker placeholder="选择时间" v-model="form.date" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date" style="width: 30%"></el-date-picker>
-        </el-form-item>
-        <div style="display: block">
-          <el-button type="primary" @click="doFilter" plain style="margin-left: 6vw;">查询</el-button>
-          <el-button type="primary" @click="rest('form')" plain style="margin-left: 6vw;">重置</el-button>
-        </div>
+        <el-form :model="form" ref="form" class="queryResult-box" style="margin-bottom: 20px;">
+          <el-form-item label="项目名称：" prop="name">
+            <el-input type="text" v-model="form.name" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
+          </el-form-item>
+          <el-form-item label="比赛地点：" prop="address">
+            <el-input type="text" v-model="form.address" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
+          </el-form-item>
+          <el-form-item label="比赛日期：" prop="date">
+            <el-date-picker placeholder="选择时间" v-model="form.date" value-format="yyyy-MM-dd" format="yyyy-MM-dd" type="date" style="width: 30%"></el-date-picker>
+          </el-form-item>
+          <div style="display: block">
+            <el-button type="primary" @click="doFilter" plain style="margin-left: 6vw;">查询</el-button>
+            <el-button type="primary" @click="rest('form')" plain style="margin-left: 6vw;">重置</el-button>
+          </div>
       </el-form>
       <el-card class="box-card" >
         <div slot="header" class="clearfix">

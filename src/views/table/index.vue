@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column align="center" label="开/闭幕式主题">
         <template slot-scope="scope">
-          {{ scope.row.title }}---开幕式
+          {{ scope.row.party}}
         </template>
       </el-table-column>
       <el-table-column label="举办地点" width="200" align="center">

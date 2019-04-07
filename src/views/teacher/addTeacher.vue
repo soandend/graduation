@@ -4,7 +4,7 @@
       <span>添加裁判</span>
     </div>
   <div class="addTeacher">
-    <el-form :model="form" class="queryResult-box" style="padding: 20px;">
+    <el-form :model="form" ref="form" class="queryResult-box" style="padding: 20px;">
       <el-form-item label="裁判姓名：" prop="teachername">
         <el-input type="text" v-model="form.teachername" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
       </el-form-item>
@@ -18,8 +18,8 @@
         <el-input type="text" v-model="form.emile" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
       </el-form-item>
       <div style="display: block">
-        <el-button type="primary" v-on:click="create" plain style="margin-left: 6vw;">创建</el-button>
-        <el-button type="primary" v-on:click="reset" plain style="margin-left: 6vw;">重置</el-button>
+        <el-button type="primary" v-on:click="create('form')" plain style="margin-left: 6vw;">创建</el-button>
+        <el-button type="primary" v-on:click="reset('form')" plain style="margin-left: 6vw;">重置</el-button>
       </div>
     </el-form>
   </div>
@@ -39,6 +39,31 @@
         }
       }
     },
+    methods:{
+      create(){
+        this.$confirm("此操作将新建一个裁判, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+// rows.splice(index, 1);
+            this.$message({
+              type: "success",
+              message: "创建成功!"
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消创建"
+            });
+          });
+      },
+      reset(formName) {
+        this.$refs[formName].resetFields();
+      },
+    }
   }
 </script>
 

@@ -4,18 +4,7 @@
       <span>比赛项目查询</span>
     </div>
     <div class="projectList">
-      <el-form :model="form" class="queryResult-box" style="margin-bottom: 20px;">
-        <el-form-item label="比赛项目：" prop="gamesname">
-          <el-input type="text" v-model="form.gamesname" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <el-form-item label="比赛日期：" prop="gamesdate">
-          <el-input type="text" v-model="form.gamesdate" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <div style="display: block">
-          <el-button type="primary" v-on:click="queryResult" plain style="margin-left: 6vw;">查询</el-button>
-          （注：可自由选择查询条件）
-        </div>
-      </el-form>
+      <Search :items="items" @search="search"></Search>
       <el-card class="box-card" >
         <div slot="header" class="clearfix">
           <span>比赛项目列表</span>
@@ -30,32 +19,23 @@
           style="width: 98%;margin-left: 1vw;margin-bottom: 1vw">
           <el-table-column align="center" label="项目名称">
             <template slot-scope="scope">
-              {{scope.row.title}}
+              {{scope.row.gamesname}}
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="成绩单位">
+            <template slot-scope="scope">
+            {{scope.row.unit}}
             </template>
           </el-table-column>
           <el-table-column align="center" label="性别要求">
             <template slot-scope="scope">
-              女
-            </template>
-          </el-table-column>
-          <el-table-column label="比赛地点" align="center">
-            <template slot-scope="scope">
-              <span>{{ scope.row.title }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="比赛日期" align="center">
-            <template slot-scope="scope">
-              {{ scope.row.date }}
-            </template>
-          </el-table-column>
-          <el-table-column label="比赛时间" align="center">
-            <template slot-scope="scope">
-              {{ scope.row.score }}
+              {{scope.row.sex}}
             </template>
           </el-table-column>
           <el-table-column align="center" prop="created_at" label="操作">
             <template slot-scope="scope">
-              <a>编辑</a>
+              <el-button size="mini" type="primary" plain @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+              <el-button size="mini" type="primary" plain @click.native="deleteRow(scope.$index, list)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -67,6 +47,13 @@
                        @current-change="handleCurrentChange"
                        @size-change="handleSizeChange">
         </el-pagination>
+        <row-edit
+          :fieldList="fieldList"
+          :dialogFormVisible="dialogFormVisible"
+          :row="row"
+          @cancel="dialogFormVisible = false"
+          @submit="submitEdit"
+        ></row-edit>
       </el-card>
     </div>
   </el-card>
@@ -74,25 +61,87 @@
 
 <script>
   import {getList} from '@/api/table'
+  import RowEdit from "@/components/row-edit.vue";
+  import Search from "@/components/search-items.vue";
 
   export default {
     name:'projectList',
+    components: { RowEdit ,Search},
     data() {
       return {
+        dialogFormVisible:false,
+        editFormVisible: false, //默认不显示编辑弹层
         list: [],
         listLoading: true,
         pagesize: 5,
         currpage: 1,
-        form: {
-          gamesname: '',
-          gamesdate: ''
-        },
+        row: {},
+        form:{},
+        fieldList: [
+          {
+            b_cname: "项目名称",
+            b_ename: "gamesname",
+            type: "input"
+          },
+          {
+            b_cname: "成绩单位",
+            b_ename: "unit",
+            type: "input"
+          },
+          {
+            b_cname: "性别要求",
+            b_ename: "sex",
+            type: "input"
+          }
+        ],
+        items:[
+          {
+            c_name:'项目名称',
+            e_name:'number',
+            type:'input'
+          }
+        ],
       }
     },
     created() {
       this.fetchData()
     },
     methods: {
+      search(data){
+        // console.log(data)
+        this.form = Object.assign({},data);
+      },
+      //点击编辑
+      handleEdit(index, row) {
+        this.dialogFormVisible = true;
+        // this.editForm = Object.assign({}, row);
+        this.row = row;
+      },
+      //编辑确认
+      submitEdit(d){
+        this.dialogFormVisible = false;
+        console.log(d);
+      },
+      deleteRow(index, rows) {
+        this.$confirm("此操作将删除该行记录, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            rows.splice(index, 1);
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      },
       handleCurrentChange(cpage) {
         this.currpage = cpage;
       },

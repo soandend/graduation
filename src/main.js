@@ -26,6 +26,11 @@ import '@/permission' // permission control
  * If you remove `../mock` it will automatically request easy-mock data.
  */
 import '../mock' // simulation data
+import axios from 'axios' // axios http请求库
+
+axios.defaults.baseURL = 'http://mockjs.com/api' // 设置默认请求的url
+Vue.prototype.$http = axios
+
 
 Vue.use(ElementUI, { locale })
 

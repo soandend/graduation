@@ -4,23 +4,7 @@
       <span>裁判信息查询</span>
     </div>
     <div class="teacherSetList">
-      <el-form :model="form" class="queryResult-box" style="margin-bottom: 20px;">
-        <el-form-item label="裁判姓名：" prop="teachername">
-          <el-input type="text" v-model="form.teachername" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <el-form-item label="参加项目：" prop="project">
-          <el-input type="text" v-model="form.project" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <el-form-item label="比赛地点：" prop="address">
-          <el-input type="text" v-model="form.address" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <el-form-item label="比赛日期：" prop="date">
-          <el-input type="text" v-model="form.date" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-        </el-form-item>
-        <div style="display: block">
-          <el-button type="primary" v-on:click="queryResult" plain style="margin-left: 6vw;">查询</el-button>
-        </div>
-      </el-form>
+      <Search :items="items" @search="search"></Search>
       <el-card class="box-card" >
         <div slot="header" class="clearfix">
           <span>裁判信息列表</span>
@@ -60,7 +44,7 @@
           </el-table-column>
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
-              <a>编辑</a>
+              <el-button size="mini" type="primary" plain @click.native="deleteRow(scope.$index, list)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -79,27 +63,69 @@
 
 <script>
   import {getList} from '@/api/table'
+  import Search from "@/components/search-items.vue";
 
   export default {
     name:'teacherSetList',
+    components:{Search},
     data() {
       return {
         list: [],
         listLoading: true,
         pagesize: 5,
         currpage: 1,
-        form: {
-          teachername: '',
-          project: '',
-          date:'',
-          time:''
-        },
+        form:{},
+        items:[
+          {
+            c_name:'裁判姓名',
+            e_name:'name',
+            type:'input'
+          },
+          {
+            c_name:'比赛项目',
+            e_name:'gamesname',
+            type:'input'
+          },
+          {
+            c_name:'比赛地点',
+            e_name:'address',
+            type:'input'
+          },
+          {
+            c_name:'比赛日期',
+            e_name:'date',
+            type:'date'
+          },
+        ],
       }
     },
     created() {
       this.fetchData()
     },
     methods: {
+      search(data){
+        this.form = Object.assign({},data);
+      },
+      deleteRow(index, rows) {
+        this.$confirm("此操作将删除该行记录, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            rows.splice(index, 1);
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      },
       handleCurrentChange(cpage) {
         this.currpage = cpage;
       },
