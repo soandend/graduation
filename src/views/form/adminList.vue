@@ -14,24 +14,24 @@
 				style="width: 98%;margin-left: 1vw;margin-bottom: 1vw"
 			>
 				<el-table-column align="center" label="用户名" prop="username">
-					<template slot-scope="scope">{{ scope.row.string }}</template>
+					<template slot-scope="scope">{{ scope.row.username }}</template>
 				</el-table-column>
 				<el-table-column align="center" label="姓名" prop="name">
-					<template slot-scope="scope">{{ scope.row.title }}</template>
+					<template slot-scope="scope">{{ scope.row.name }}</template>
 				</el-table-column>
 				<el-table-column align="center" label="管理员类型" prop="type">
 					<template slot-scope="scope">
-						<span>{{ scope.row.title }}</span>
+						<span>普通管理员</span>
 					</template>
 				</el-table-column>
-				<el-table-column align="center" label="邮箱" prop="emile">
+				<el-table-column align="center" label="邮箱" prop="email">
 					<template slot-scope="scope">
-						<span>078786745@qq.com</span>
+						<span>{{ scope.row.email }}</span>
 					</template>
 				</el-table-column>
 				<el-table-column align="center" label="电话号码" prop="phone">
 					<template slot-scope="scope">
-						<span>12243454657</span>
+						<span>{{ scope.row.phone }}</span>
 					</template>
 				</el-table-column>
 				<el-table-column align="center" label="操作">
@@ -50,33 +50,6 @@
 				@current-change="handleCurrentChange"
 				@size-change="handleSizeChange"
 			></el-pagination>
-			<!--<el-dialog title="编辑"-->
-			<!--:visible.sync="editFormVisible"-->
-			<!--:close-on-click-modal="false"-->
-			<!--class="edit-form"-->
-			<!--:before-close="handleClose">-->
-			<!--<el-form :model="editForm" label-width="80px" ref="editForm">-->
-			<!--<el-form-item label="用户名" prop="username">-->
-			<!--{{editForm.username}}-->
-			<!--</el-form-item>-->
-			<!--<el-form-item label="姓名" prop="name">-->
-			<!--<el-input v-model="editForm.name" auto-complete="off"></el-input>-->
-			<!--</el-form-item>-->
-			<!--<el-form-item label="管理员类型" prop="type">-->
-			<!--<el-input v-model="editForm.type" auto-complete="off"></el-input>-->
-			<!--</el-form-item>-->
-			<!--<el-form-item label="号码" prop="phone">-->
-			<!--<el-input v-model="editForm.phone" auto-complete="off"></el-input>-->
-			<!--</el-form-item>-->
-			<!--<el-form-item label="邮箱" prop="emile">-->
-			<!--<el-input v-model="editForm.emile" auto-complete="off"></el-input>-->
-			<!--</el-form-item>-->
-			<!--</el-form>-->
-			<!--<div slot="footer" class="dialog-footer">-->
-			<!--<el-button @click.native="handleCancel('editForm')">取消</el-button>-->
-			<!--<el-button type="primary" @click.native="handleUpdate('editForm')">更新</el-button>-->
-			<!--</div>-->
-			<!--</el-dialog>-->
 			<row-edit
 				:fieldList="fieldList"
 				:dialogFormVisible="dialogFormVisible"
@@ -102,33 +75,26 @@
 				listLoading: true,
 				pagesize: 5,
 				currpage: 1,
-				editForm: {
-					username: "",
-					name: "",
-					type: "",
-					phone: "",
-					emile: ""
-				},
 				row: {},
 				fieldList: [
 					{
 						b_cname: "用户名",
-						b_ename: "string",
-						type: "input"
+						b_ename: "username",
+						type: "text"
 					},
 					{
 						b_cname: "姓名",
-						b_ename: "title",
+						b_ename: "name",
 						type: "input"
 					},
 					{
-						b_cname: "学院",
-						b_ename: "school",
+						b_cname: "邮箱",
+						b_ename: "email",
 						type: "input"
 					},
 					{
-						b_cname: "地址",
-						b_ename: "address",
+						b_cname: "号码",
+						b_ename: "phone",
 						type: "input"
 					}
 				]
@@ -141,7 +107,6 @@
 			//点击编辑
 			handleEdit(index, row) {
 				this.dialogFormVisible = true;
-				console.log(row);
 				// this.editForm = Object.assign({}, row);
 				this.row = row;
       },
@@ -150,31 +115,8 @@
         this.dialogFormVisible = false;
         console.log(d);
       },
-			//点击关闭dialog
-			handleClose(done) {
-				this.editFormVisible = false;
-			},
-
-			//点击取消
-			handleCancel(formName) {
-				this.editFormVisible = false;
-			},
-
-			//点击更新
-			handleUpdate(forName) {
-				// console.log(this.editForm.username)
-				// 更新的时候把弹出来的表单中的数据写到要修改的表格中
-				var postData = {
-					username: this.editForm.username,
-					name: this.editForm.name,
-					phone: this.editForm.phone,
-					emile: this.editForm.emile
-				};
-				//这里再向后台发个post请求重新渲染表格数据
-				this.editFormVisible = false;
-			},
 			deleteRow(index, rows) {
-				this.$confirm("此操作将删除改行记录, 是否继续?", "提示", {
+				this.$confirm("此操作将删除该行记录, 是否继续?", "提示", {
 					confirmButtonText: "确定",
 					cancelButtonText: "取消",
 					type: "warning"

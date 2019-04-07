@@ -147,7 +147,16 @@ export const constantRouterMap = [
         path: 'studentList',
         name: 'StudentList',
         component: () => import('@/views/join/studentList'),
-        meta: {title: '选手资料', icon: 'form'}
+        meta: {title: '选手资料', icon: 'form'},
+        children: [
+          {
+            path: 'join',
+            name: 'Join',
+            component: () => import('@/views/join/join'),
+            hidden: true,
+            meta: {title: '报名比赛'}
+          },
+        ]
       },
       {
         path: 'addStudent',
@@ -181,6 +190,12 @@ export const constantRouterMap = [
         name: 'AddProject',
         component: () => import('@/views/project/addProject'),
         meta: {title: '项目创建', icon: 'form'}
+      },
+      {
+        path: 'projectSet',
+        name: 'ProjectSet',
+        component: () => import('@/views/project/projectSet'),
+        meta: {title: '项目设置', icon: 'form'}
       }
     ]
   },
@@ -196,13 +211,31 @@ export const constantRouterMap = [
         path: 'scoreList',
         name: 'ScoreList',
         component: () => import('@/views/score/scoreList'),
-        meta: {title: '成绩查询', icon: 'form'}
+        meta: {title: '成绩查询', icon: 'form'},
+        children: [
+          {
+            path: 'detail',
+            name: 'Detail',
+            component: () => import('@/views/score/detail'),
+            hidden: true,
+            meta: {title: '成绩录入'}
+          },
+        ]
       },
       {
         path: 'addScore',
         name: 'AddScore',
         component: () => import('@/views/score/addScore'),
-        meta: {title: '成绩录入', icon: 'form'}
+        meta: {title: '成绩录入', icon: 'form'},
+        children: [
+          {
+            path: 'add',
+            name: 'Add',
+            component: () => import('@/views/score/add'),
+            hidden: true,
+            meta: {title: '查看成绩详情'}
+          },
+        ]
       }
     ]
   },
@@ -218,7 +251,16 @@ export const constantRouterMap = [
         path: 'kitList',
         name: 'KitList',
         component: () => import('@/views/kit/kitList'),
-        meta: {title: '器材查询', icon: 'form'}
+        meta: {title: '器材查询', icon: 'form'},
+        children: [
+          {
+            path: 'rent',
+            name: 'Rent',
+            component: () => import('@/views/kit/rent'),
+            hidden: true,
+            meta: {title: '租借器材'}
+          },
+        ]
       },
       {
         path: 'addKit',
@@ -230,7 +272,16 @@ export const constantRouterMap = [
         path: 'rentList',
         name: 'RentList',
         component: () => import('@/views/kit/rentList'),
-        meta: {title: '器材借还', icon: 'form'}
+        meta: {title: '器材借还', icon: 'form'},
+        children: [
+          {
+            path: 'return',
+            name: 'Return',
+            component: () => import('@/views/kit/return'),
+            hidden: true,
+            meta: {title: '归还器材'}
+          },
+        ]
       }
     ]
   },
@@ -246,7 +297,16 @@ export const constantRouterMap = [
         path: 'teacherList',
         name: 'TeacherList',
         component: () => import('@/views/teacher/teacherList'),
-        meta: {title: '裁判信息', icon: 'form'}
+        meta: {title: '裁判信息', icon: 'form'},
+        children: [
+          {
+            path: 'join',
+            name: 'Join',
+            component: () => import('@/views/teacher/join'),
+            hidden: true,
+            meta: {title: '裁判参赛'}
+          },
+        ]
       },
       {
         path: 'addTeacher',
@@ -286,7 +346,15 @@ export const constantRouterMap = [
         path: 'radio',
         name: 'Radio',
         component: () => import('@/views/others/radio'),
-        meta: {title: '广播信息管理', icon: 'tree'}
+        meta: {title: '广播信息管理', icon: 'tree'},children: [
+          {
+            path: 'detail',
+            name: 'Detail',
+            component: () => import('@/views/others/detail'),
+            hidden: true,
+            meta: {title: '信息详情'}
+          },
+        ]
       }
     ]
   },

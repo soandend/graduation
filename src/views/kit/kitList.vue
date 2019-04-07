@@ -1,20 +1,12 @@
 <template>
-  <el-card class="box-card" style="margin: 1vw">
+  <div>
+    <router-view></router-view>
+  <el-card class="box-card" style="margin: 1vw" v-if="seen">
     <div slot="header" class="clearfix">
       <span>器材信息查询</span>
     </div>
   <div class="kitList">
-    <el-form :model="form" class="queryResult-box" style="margin-bottom: 20px;">
-      <el-form-item label="器材名称：" prop="kitname">
-        <el-input type="text" v-model="form.kitname" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-      </el-form-item>
-      <el-form-item label="存放位置：" prop="address">
-        <el-input type="text" v-model="form.address" clearable prefix-icon="icon-inputmima" style="width: 30%"/>
-      </el-form-item>
-      <div style="display: block">
-        <el-button type="primary" v-on:click="queryResult" plain style="margin-left: 6vw;">查询</el-button>
-      </div>
-    </el-form>
+    <Search :items="items" @search="search"></Search>
     <el-card class="box-card" >
       <div slot="header" class="clearfix">
         <span>器材信息列表</span>
@@ -27,29 +19,31 @@
       fit
       highlight-current-row
       style="width: 98%;margin-left: 1vw;margin-bottom: 1vw">
-      <el-table-column align="center" label="器材名称">
+      <el-table-column align="center" label="器材名称" width="100px">
         <template slot-scope="scope">
-          {{ scope.row.title}}
+          {{ scope.row.username}}
         </template>
       </el-table-column>
       <el-table-column align="center" label="存放地点">
         <template slot-scope="scope">
-          {{ scope.row.title }}
+          {{ scope.row.address }}
         </template>
       </el-table-column>
-      <el-table-column label="总数" align="center">
+      <el-table-column label="总数" align="center" width="150px">
         <template slot-scope="scope">
-          <span>50</span>
+          <span>{{scope.row.number}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="剩余总数" align="center">
+      <el-table-column label="剩余数量" align="center" width="150px">
         <template slot-scope="scope">
-          <span>20</span>
+          <span>{{scope.row.integer}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="操作">
         <template slot-scope="scope">
-          <a>修改信息</a>&emsp;&emsp;<a>借用</a>&emsp;&emsp;<a>删除</a>
+          <el-button size="mini" type="primary" plain @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button size="mini" type="primary" plain @click="rent(scope.$index, scope.row)">借用</el-button>
+          <el-button size="mini" type="primary" plain @click.native="deleteRow(scope.$index, list)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -61,32 +55,100 @@
                      @current-change="handleCurrentChange"
                      @size-change="handleSizeChange">
       </el-pagination>
+      <row-edit
+        :fieldList="fieldList"
+        :dialogFormVisible="dialogFormVisible"
+        :row="row"
+        @cancel="dialogFormVisible = false"
+        @submit="submitEdit"
+      ></row-edit>
+
     </el-card>
   </div>
   </el-card>
+  </div>
 </template>
 
 <script>
   import {getList} from '@/api/table'
+  import Search from "@/components/search-items.vue";
+  import RowEdit from "@/components/row-edit.vue";
 
   export default {
     name:'kitList',
+    components:{Search,RowEdit},
     data() {
       return {
         list: [],
         listLoading: true,
         pagesize: 5,
         currpage: 1,
-        form: {
-          kitname: '',
-          address: ''
-        },
+        dialogFormVisible:false,
+        editFormVisible: false, //默认不显示编辑弹层
+        seen:true,
+        row:{},
+        form:{},
+        fieldList: [
+          {
+            b_cname: "器材名称",
+            b_ename: "name",
+            type: "text"
+          },
+          {
+            b_cname: "存放地点",
+            b_ename: "address",
+            type: "input"
+          },
+          {
+            b_cname: "总数",
+            b_ename: "integer",
+            type: "input"
+          },
+          {
+            b_cname: "剩余数量",
+            b_ename: "integer",
+            type: "input"
+          }
+          ],
+        items:[
+          {
+            c_name:'器材名称',
+            e_name:'name',
+            type:'input'
+          },
+          {
+            c_name:'存放地点',
+            e_name:'address',
+            type:'input'
+          }
+        ],
+      }
+    },
+    watch:{
+      $route(to,from){
+        if(to.path === '/kit/kitList'){
+          this.seen = true;
+        }
       }
     },
     created() {
       this.fetchData()
     },
     methods: {
+      search(data){
+        this.form = Object.assign({},data);
+      },
+      //点击编辑
+      handleEdit(index, row) {
+        this.dialogFormVisible = true;
+// this.editForm = Object.assign({}, row);
+        this.row = row;
+      },
+//编辑确认
+      submitEdit(d){
+        this.dialogFormVisible = false;
+        console.log(d);
+      },
       handleCurrentChange(cpage) {
         this.currpage = cpage;
       },
@@ -109,7 +171,32 @@
           this.list = response.data.items
           this.listLoading = false
         })
-      }
+      },
+      //跳转
+      rent(index,row){
+        this.$router.push({path:'/kit/kitList/rent',query:{row}})
+        this.seen=false
+      },
+      deleteRow(index, rows) {
+        this.$confirm("此操作将删除该行记录, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            rows.splice(index, 1);
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除"
+            });
+          });
+      },
     },
     mounted() {
       this.getlist()
